@@ -1,0 +1,60 @@
+<#@ template hostSpecific="true" #>
+<#@ assembly name="Microsoft.EntityFrameworkCore.Design" #>
+<#@ parameter name="NamespaceHint" type="System.String" #>
+<#@ parameter name="EntityType" type="Microsoft.EntityFrameworkCore.Metadata.IEntityType" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore" #>
+using System;
+using System.Collections.Generic;
+
+namespace <#= NamespaceHint #>;
+
+public partial class <#= EntityType.Name #>
+{
+<#
+    var properties = EntityType.GetProperties().OrderBy(p => p.GetColumnOrder() ?? int.MaxValue);
+    foreach (var property in properties)
+    {
+        var propertyType = property.ClrType.Name;
+        if (property.ClrType.IsGenericType && property.ClrType.GetGenericTypeDefinition() == typeof(Nullable<>))
+        {
+            propertyType = Nullable.GetUnderlyingType(property.ClrType).Name + "?";
+        }
+        
+        var isNullable = property.IsNullable;
+        var nullableAnnotation = !isNullable && property.ClrType.IsClass && property.ClrType != typeof(string) ? "" : "";
+        
+        // Determine if property should have private setter
+        var isKey = property.IsKey();
+        var isForeignKey = property.IsForeignKey();
+        var isTimestamp = property.Name.EndsWith("CreatedAt") || property.Name.EndsWith("UpdatedAt");
+        var privateSet = isKey || isForeignKey || isTimestamp ? " private" : "";
+#>
+    public <#= propertyType #> <#= property.Name #> { get;<#= privateSet #> set; }<#= !isNullable && property.ClrType == typeof(string) ? " = null!;" : isNullable && property.ClrType.IsValueType && !property.ClrType.IsGenericType ? "" : property.ClrType.IsClass && !isNullable && property.ClrType != typeof(string) ? " = null!;" : "" #>
+
+<#
+    }
+
+    var navigations = EntityType.GetNavigations().OrderBy(n => n.IsCollection ? 1 : 0).ThenBy(n => n.Name);
+    foreach (var navigation in navigations)
+    {
+        var navigationType = navigation.ClrType.Name;
+        if (navigation.IsCollection)
+        {
+            var itemType = navigation.TargetEntityType.Name;
+            navigationType = $"ICollection<{itemType}>";
+#>
+    public virtual <#= navigationType #> <#= navigation.Name #> { get; private set; } = new List<<#= itemType #>>();
+
+<#
+        }
+        else
+        {
+#>
+    public virtual <#= navigationType #> <#= navigation.Name #> { get; private set; } = null!;
+
+<#
+        }
+    }
+#>
+}

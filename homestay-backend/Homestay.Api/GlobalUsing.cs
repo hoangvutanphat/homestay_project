@@ -1,0 +1,1 @@
+global using HomestayEntity = Homestay.Api.Domain.Entities.Homestay;

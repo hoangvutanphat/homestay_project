@@ -1,0 +1,39 @@
+<#@ template hostSpecific="true" #>
+<#@ assembly name="Microsoft.EntityFrameworkCore.Design" #>
+<#@ parameter name="NamespaceHint" type="System.String" #>
+<#@ parameter name="ContextName" type="System.String" #>
+<#@ parameter name="EntityTypes" type="System.Collections.Generic.IEnumerable<Microsoft.EntityFrameworkCore.Metadata.IEntityType>" #>
+<#@ import namespace="System.Linq" #>
+using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+
+namespace <#= NamespaceHint #>;
+
+public partial class <#= ContextName #> : DbContext
+{
+    public <#= ContextName #>()
+    {
+    }
+
+    public <#= ContextName #>(DbContextOptions<<#= ContextName #>> options)
+        : base(options)
+    {
+    }
+
+<#
+    foreach (var entityType in EntityTypes)
+    {
+#>
+    public virtual DbSet<<#= entityType.Name #>> <#= entityType.GetDbSetName() #> { get; set; }
+
+<#
+    }
+#>
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        OnModelCreatingPartial(modelBuilder);
+    }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+}
