@@ -373,6 +373,7 @@ public partial class HomestayDbContext(DbContextOptions<HomestayDbContext> optio
             entity.Property(e => e.LastName).HasColumnName("last_name");
             entity.Property(e => e.Phone).HasColumnName("phone");
             entity.Property(e => e.Role).HasColumnName("role");
+            entity.Property(e => e.PasswordHash).HasColumnName("password_hash");
         });
 
         OnModelCreatingPartial(modelBuilder);

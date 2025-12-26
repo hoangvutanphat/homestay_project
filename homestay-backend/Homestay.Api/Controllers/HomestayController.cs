@@ -1,7 +1,7 @@
 using Homestay.Api.Application.Interfaces;
 using Homestay.Api.Application.DTOs;
-using Homestay.Api.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 [ApiController]
@@ -26,10 +26,11 @@ public class HomestayController : ControllerBase
         }
     
     [HttpGet("admin/all-including-deleted")]
-    //[Authorize]
+    [Authorize]
     public async Task<IActionResult> GetAllIncludingDeleted()
         => Ok(await _homestayService.GetAllHomestaysIncludingDeletedAsync());
     [HttpGet("admin/deleted")]
+    [Authorize]
     public async Task<IActionResult> GetDeletedHomestays()
         => Ok(await _homestayService.GetDeletedHomestaysAsync());
     [HttpPost]
@@ -45,7 +46,7 @@ public class HomestayController : ControllerBase
         return success ? NoContent() : NotFound();
     }
     [HttpDelete("{id}")]
-    //[Authorize] // Bỏ comment khi có authentication
+    [Authorize]
     public async Task<IActionResult> SoftDelete(Guid id)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
