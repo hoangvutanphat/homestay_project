@@ -9,12 +9,14 @@ builder.Services.AddDatabase(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAuthorizationPolicies();
+builder.Services.AddCorsPolicy();
 builder.Services.AddControllers();
 builder.Services.AddApplicationServices();
 
 var app = builder.Build();
 
 app.UseCustomMiddleware();
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
