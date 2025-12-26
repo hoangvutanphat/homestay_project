@@ -1,20 +1,22 @@
-using Homestay.Api.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
-using Homestay.Api.Infrastructure.Repositories;
-using Homestay.Api.Application.Services;
-using Homestay.Api.Application.Interfaces;
+using Homestay.Api.Extensions;
+
+DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<HomestayDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-    .LogTo(Console.WriteLine, LogLevel.Information)
-);
+builder.Configuration.AddEnvironmentVariables();
+builder.Services.AddDatabase(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddAuthorizationPolicies();
 builder.Services.AddControllers();
-builder.Services.AddScoped<HomestayRepository>();
-builder.Services.AddScoped<IHomestayService, HomestayService>();
+builder.Services.AddApplicationServices();
+
 var app = builder.Build();
 
+app.UseCustomMiddleware();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
