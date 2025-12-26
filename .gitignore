@@ -190,3 +190,5 @@ yarn-error.log*
 
 # Test projects
 ../Homestay.Api.Tests/
+homestay-backend/Homestay.Api.Tests/*
+*.sh
