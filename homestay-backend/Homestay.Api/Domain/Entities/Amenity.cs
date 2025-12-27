@@ -17,5 +17,5 @@ public partial class Amenity
 
     public DateTime? CreatedAt { get; private set; }
 
-    public virtual ICollection<Room> Rooms { get; private set; } = new List<Room>();
+    public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
 }

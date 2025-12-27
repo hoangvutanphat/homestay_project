@@ -23,9 +23,9 @@ public partial class Review
 
     public Guid HomestayId { get; private set; }
 
-    public virtual Booking Booking { get; private set; } = null!;
+    public virtual Booking Booking { get;  set; } = null!;
 
-    public virtual Homestay Homestay { get; private set; } = null!;
+    public virtual Homestay Homestay { get;  set; } = null!;
 
-    public virtual User User { get; private set; } = null!;
+    public virtual User User { get;  set; } = null!;
 }

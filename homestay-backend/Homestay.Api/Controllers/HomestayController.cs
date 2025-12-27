@@ -43,7 +43,8 @@ public class HomestayController : ControllerBase
     [Authorize(Policy = AuthorizationPolicies.HostOrAdmin)]
     public async Task<IActionResult> Create([FromBody] CreateHomestayRequest request)
     {
-        var newHomestay = await _homestayService.CreateHomestayAsync(request);
+        var hostId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var newHomestay = await _homestayService.CreateHomestayAsync(hostId, request);
         return CreatedAtAction(nameof(GetById), new { id = newHomestay.Id }, newHomestay);
     }
 

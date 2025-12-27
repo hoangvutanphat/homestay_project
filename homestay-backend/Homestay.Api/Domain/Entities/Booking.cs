@@ -7,9 +7,9 @@ public partial class Booking
 {
     public Guid Id { get; private set; }
 
-    public Guid UserId { get; private set; }
+    public Guid UserId { get;  set; }
 
-    public Guid RoomId { get; private set; }
+    public Guid RoomId { get;  set; }
 
     public DateOnly CheckIn { get; set; }
 
@@ -23,11 +23,11 @@ public partial class Booking
 
     public Guid? DeletedBy { get; set; }
     
-    public virtual ICollection<Payment> Payments { get; private set; } = new List<Payment>();
+    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
-    public virtual ICollection<Review> Reviews { get; private set; } = new List<Review>();
+    public virtual ICollection<Review> Reviews { get;  set; } = new List<Review>();
 
-    public virtual Room Room { get; private set; } = null!;
+    public virtual Room Room { get;  set; } = null!;
 
-    public virtual User User { get; private set; } = null!;
+    public virtual User User { get;  set; } = null!;
 }

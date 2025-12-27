@@ -25,9 +25,9 @@ public partial class User
 
     public Guid? DeletedBy { get; set; }
 
-    public virtual ICollection<Booking> Bookings { get; private set; } = new List<Booking>();
+    public virtual ICollection<Booking> Bookings { get;  set; } = new List<Booking>();
 
-    public virtual ICollection<Homestay> Homestays { get; private set; } = new List<Homestay>();
+    public virtual ICollection<Homestay> Homestays { get;  set; } = new List<Homestay>();
 
-    public virtual ICollection<Review> Reviews { get; private set; } = new List<Review>();
+    public virtual ICollection<Review> Reviews { get;  set; } = new List<Review>();
 }

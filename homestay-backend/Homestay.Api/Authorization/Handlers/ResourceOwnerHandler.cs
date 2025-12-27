@@ -35,7 +35,7 @@ public class ResourceOwnerHandler : AuthorizationHandler<ResourceOwnerRequiremen
         var ownerId = routeData.Values["userId"]?.ToString();
 
         var userRole = context.User.FindFirst(ClaimTypes.Role)?.Value;
-        if (userRole == "ADMIN")
+        if (userRole == "admin")
         {
             context.Succeed(requirement);
             return Task.CompletedTask;
