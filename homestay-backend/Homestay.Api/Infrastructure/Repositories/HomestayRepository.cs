@@ -20,7 +20,10 @@ public class HomestayRepository
             .ToListAsync();
 
     public async Task<HomestayEntity?> GetHomestayByIdAsync(Guid id)
-        => await _context.Homestays.FindAsync(id);
+        => await _context.Homestays
+            .AsNoTracking()
+            .Include(h => h.Rooms)
+            .FirstOrDefaultAsync(h => h.Id == id);
     
     public async Task<List<HomestayEntity>> GetAllHomestaysIncludingDeletedAsync()
         => await _context.Homestays
