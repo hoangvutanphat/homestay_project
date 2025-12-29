@@ -12,22 +12,17 @@ namespace Homestay.Api.Controllers;
 public class HomestayController : ControllerBase
 {
     private readonly IHomestayService _homestayService;
+    private readonly IRoomService _roomService;
 
-    public HomestayController(IHomestayService homestayService)
+    public HomestayController(IHomestayService homestayService, IRoomService roomService)
     {
         _homestayService = homestayService;
+        _roomService = roomService;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
         => Ok(await _homestayService.GetAllHomestaysAsync());
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(Guid id)
-    { 
-        var result = await _homestayService.GetHomestayByIdAsync(id);
-        return result == null ? NotFound() : Ok(result);
-    }
 
     [HttpGet("admin/all-including-deleted")]
     [Authorize(Policy = AuthorizationPolicies.AdminOnly)]
@@ -39,11 +34,26 @@ public class HomestayController : ControllerBase
     public async Task<IActionResult> GetDeletedHomestays()
         => Ok(await _homestayService.GetDeletedHomestaysAsync());
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id)
+    { 
+        var result = await _homestayService.GetHomestayByIdAsync(id);
+        return result == null ? NotFound() : Ok(result);
+    }
+
+    [HttpGet("{id}/rooms")]
+    public async Task<IActionResult> GetHomestayRooms(Guid id)
+    {
+        var rooms = await _roomService.GetRoomsByHomestayIdAsync(id);
+        return Ok(rooms);
+    }
+
     [HttpPost]
     [Authorize(Policy = AuthorizationPolicies.HostOrAdmin)]
     public async Task<IActionResult> Create([FromBody] CreateHomestayRequest request)
     {
-        var newHomestay = await _homestayService.CreateHomestayAsync(request);
+        var hostId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var newHomestay = await _homestayService.CreateHomestayAsync(hostId, request);
         return CreatedAtAction(nameof(GetById), new { id = newHomestay.Id }, newHomestay);
     }
 

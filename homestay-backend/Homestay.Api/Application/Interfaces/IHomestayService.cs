@@ -9,7 +9,7 @@ public interface IHomestayService
     Task<HomestayEntity?> GetHomestayByIdAsync(Guid id);
     Task<List<HomestayEntity>> GetAllHomestaysIncludingDeletedAsync();
     Task<List<HomestayEntity>> GetDeletedHomestaysAsync();
-    Task<HomestayEntity> CreateHomestayAsync(CreateHomestayRequest request);
+    Task<HomestayEntity> CreateHomestayAsync(Guid hostId, CreateHomestayRequest request);
     Task<bool> UpdateHomestayAsync(Guid id, UpdateHomestayRequest request);
     Task<bool> SoftDeleteHomestayAsync(Guid id, Guid? deletedBy = null);
     Task<bool> RestoreHomestayAsync(Guid id);

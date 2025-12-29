@@ -16,13 +16,11 @@ public class RequestLoggingMiddleware
         var startTime = DateTime.UtcNow;
         var requestMethod = context.Request.Method;
         var requestPath = context.Request.Path;
-        var userEmail = context.User.Identity?.IsAuthenticated == true 
-            ? context.User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value 
-            : "Anonymous";
+        
 
         _logger.LogInformation(
             "Incoming Request: {Method} {Path} by {User}", 
-            requestMethod, requestPath, userEmail);
+            requestMethod, requestPath, "Anonymous");
 
         await _next(context);
 

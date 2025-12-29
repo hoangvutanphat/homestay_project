@@ -1,6 +1,5 @@
 using Homestay.Api.Application.DTOs;
 using Homestay.Api.Application.Interfaces;
-using Homestay.Api.Domain.Entities;
 using Homestay.Api.Infrastructure.Repositories;
 
 namespace Homestay.Api.Application.Services;
@@ -26,11 +25,11 @@ public class HomestayService : IHomestayService
     public Task<List<HomestayEntity>> GetDeletedHomestaysAsync()
         => _repository.GetDeletedHomestaysAsync();
     
-    public async Task<HomestayEntity> CreateHomestayAsync(CreateHomestayRequest request)
+    public async Task<HomestayEntity> CreateHomestayAsync(Guid hostId, CreateHomestayRequest request)
     {
         var homestay = new HomestayEntity
         {
-            HostId = request.HostId,
+            HostId = hostId,
             Name = request.Name,
             Address = request.Address,
             City = request.City,

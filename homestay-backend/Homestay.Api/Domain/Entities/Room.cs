@@ -7,7 +7,7 @@ public partial class Room
 {
     public Guid Id { get; private set; }
 
-    public Guid HomestayId { get; private set; }
+    public Guid HomestayId { get; set; }
 
     public string RoomName { get; set; } = null!;
 
@@ -19,13 +19,13 @@ public partial class Room
 
     public DateTime? CreatedAt { get; private set; }
 
-    public virtual ICollection<Booking> Bookings { get; private set; } = new List<Booking>();
+    public virtual ICollection<Booking> Bookings { get;  set; } = new List<Booking>();
 
-    public virtual Homestay Homestay { get; private set; } = null!;
+    public virtual Homestay Homestay { get;  set; } = null!;
 
-    public virtual ICollection<RoomAvailability> RoomAvailabilities { get; private set; } = new List<RoomAvailability>();
+    public virtual ICollection<RoomAvailability> RoomAvailabilities { get;  set; } = new List<RoomAvailability>();
 
-    public virtual ICollection<Amenity> Amenities { get; private set; } = new List<Amenity>();
+    public virtual ICollection<Amenity> Amenities { get;  set; } = new List<Amenity>();
 
-    public virtual ICollection<Promotion> Promotions { get; private set; } = new List<Promotion>();
+    public virtual ICollection<Promotion> Promotions { get;  set; } = new List<Promotion>();
 }
