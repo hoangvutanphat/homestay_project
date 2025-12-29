@@ -9,8 +9,12 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<HomestayRepository>();
+        services.AddScoped<BookingRepository>();
+        services.AddScoped<RoomRepository>();
         services.AddScoped<IHomestayService, HomestayService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IBookingService, BookingService>();
+        services.AddScoped<IRoomService, RoomService>();
 
         return services;
     }
