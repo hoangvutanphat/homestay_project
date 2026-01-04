@@ -76,12 +76,25 @@ public class BookingRepository
 
     public async Task<bool> CancelAsync(Guid id, Guid userId)
     {
-        var now = DateTime.UtcNow;
+        var now = DateTime.Now;
         return await _context.Bookings
             .Where(b => b.Id == id)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(b => b.Status, BookingStatus.Cancelled)
                 .SetProperty(b => b.DeletedAt, now)
                 .SetProperty(b => b.DeletedBy, userId)) > 0;
+    }
+
+    public async Task<IEnumerable<Booking>> GetExpiredPendingPaymentBookingsAsync()
+    {
+        var expiryThreshold = DateTime.Now.AddMinutes(-15);
+        
+        return await _context.Bookings
+            .Include(b => b.Room)
+            .Where(b => 
+                b.Status == BookingStatus.Pending &&
+                b.CreatedAt < expiryThreshold &&
+                b.DeletedAt == null)
+            .ToListAsync();
     }
 }

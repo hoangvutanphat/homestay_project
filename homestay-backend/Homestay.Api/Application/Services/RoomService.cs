@@ -51,7 +51,7 @@ public class RoomService : IRoomService
             BasePrice = roomWithHomestay.BasePrice,
             Capacity = roomWithHomestay.Capacity,
             Status = roomWithHomestay.Status,
-            CreatedAt = roomWithHomestay.CreatedAt ?? DateTime.UtcNow
+            CreatedAt = roomWithHomestay.CreatedAt ?? DateTime.Now
         };
     }
 
@@ -111,7 +111,7 @@ public class RoomService : IRoomService
             BasePrice = room.BasePrice,
             Capacity = room.Capacity,
             Status = room.Status,
-            CreatedAt = room.CreatedAt ?? DateTime.UtcNow
+            CreatedAt = room.CreatedAt ?? DateTime.Now
         };
     }
 }

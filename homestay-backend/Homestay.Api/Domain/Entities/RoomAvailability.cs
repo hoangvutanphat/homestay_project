@@ -5,9 +5,9 @@ namespace Homestay.Api.Domain.Entities;
 
 public partial class RoomAvailability
 {
-    public Guid Id { get; private set; }
+    public Guid Id { get;  set; }
 
-    public Guid RoomId { get; private set; }
+    public Guid RoomId { get;  set; }
 
     public DateOnly Date { get; set; }
 
