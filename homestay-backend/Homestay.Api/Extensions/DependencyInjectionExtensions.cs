@@ -11,10 +11,16 @@ public static class DependencyInjectionExtensions
         services.AddScoped<HomestayRepository>();
         services.AddScoped<BookingRepository>();
         services.AddScoped<RoomRepository>();
+        services.AddScoped<RoomAvailabilityRepository>();
+        services.AddScoped<PaymentRepository>();
+        
         services.AddScoped<IHomestayService, HomestayService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IBookingService, BookingService>();
         services.AddScoped<IRoomService, RoomService>();
+        services.AddScoped<IPaymentService, PaymentService>();
+
+        services.AddHostedService<BookingExpirationService>();
 
         return services;
     }

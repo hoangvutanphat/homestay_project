@@ -10,11 +10,13 @@ public class BookingService : IBookingService
 {
     private readonly BookingRepository _bookingRepository;
     private readonly RoomRepository _roomRepository;
+    private readonly RoomAvailabilityRepository _availabilityRepository;
 
-    public BookingService(BookingRepository bookingRepository, RoomRepository roomRepository)
+    public BookingService(BookingRepository bookingRepository, RoomRepository roomRepository, RoomAvailabilityRepository availabilityRepository)
     {
         _bookingRepository = bookingRepository;
         _roomRepository = roomRepository;
+        _availabilityRepository = availabilityRepository;
     }
 
     public async Task<BookingResponse> CreateBookingAsync(Guid userId, CreateBookingRequest request)
@@ -45,6 +47,15 @@ public class BookingService : IBookingService
 
         var createdBooking = await _bookingRepository.CreateAsync(booking);
 
+        var reserved = await _availabilityRepository.ReserveRoomAsync(
+            request.RoomId, request.CheckIn, request.CheckOut, createdBooking.Id);
+        
+        if (!reserved)
+        {
+            await _bookingRepository.CancelAsync(createdBooking.Id, userId);
+            throw new InvalidOperationException("Failed to reserve room. Please try again.");
+        }
+
         return new BookingResponse
         {
             Id = createdBooking.Id,
@@ -58,7 +69,7 @@ public class BookingService : IBookingService
             NumberOfNights = numberOfNights,
             TotalPrice = totalPrice,
             Status = createdBooking.Status,
-            CreatedAt = createdBooking.CreatedAt ?? DateTime.UtcNow
+            CreatedAt = createdBooking.CreatedAt ?? DateTime.Now
         };
     }
 
@@ -128,7 +139,15 @@ public class BookingService : IBookingService
         if (booking.Status == BookingStatus.Completed || booking.Status == BookingStatus.Cancelled)
             throw new InvalidOperationException($"Cannot cancel a {booking.Status} booking");
 
-        return await _bookingRepository.CancelAsync(bookingId, userId);
+        var result = await _bookingRepository.CancelAsync(bookingId, userId);
+        
+        if (result)
+        {
+            await _availabilityRepository.ReleaseRoomAsync(
+                booking.RoomId, booking.CheckIn, booking.CheckOut, bookingId);
+        }
+
+        return result;
     }
 
     private static BookingResponse MapToResponse(Booking booking)
@@ -151,7 +170,7 @@ public class BookingService : IBookingService
             NumberOfNights = numberOfNights,
             TotalPrice = totalPrice,
             Status = booking.Status,
-            CreatedAt = booking.CreatedAt ?? DateTime.UtcNow
+            CreatedAt = booking.CreatedAt ?? DateTime.Now
         };
     }
 

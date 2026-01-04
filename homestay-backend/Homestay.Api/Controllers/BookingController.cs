@@ -22,9 +22,24 @@ public class BookingController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateBooking([FromBody] CreateBookingRequest request)
     {
-        var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var booking = await _bookingService.CreateBookingAsync(userId, request);
-        return CreatedAtAction(nameof(GetBooking), new { id = booking.Id }, booking);
+        try
+        {
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var booking = await _bookingService.CreateBookingAsync(userId, request);
+            return CreatedAtAction(nameof(GetBooking), new { id = booking.Id }, booking);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 
     [HttpGet("my-bookings")]
@@ -65,21 +80,35 @@ public class BookingController : ControllerBase
         Guid id, 
         [FromBody] UpdateBookingStatusRequest request)
     {
-        var success = await _bookingService.UpdateBookingStatusAsync(id, request.Status);
-        if (!success)
-            return NotFound(new { Message = "Booking not found" });
+        try
+        {
+            var success = await _bookingService.UpdateBookingStatusAsync(id, request.Status);
+            if (!success)
+                return NotFound(new { Message = "Booking not found" });
 
-        return NoContent();
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> CancelBooking(Guid id)
     {
-        var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var success = await _bookingService.CancelBookingAsync(id, userId);
-        if (!success)
-            return NotFound(new { Message = "Booking not found" });
+        try
+        {
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var success = await _bookingService.CancelBookingAsync(id, userId);
+            if (!success)
+                return NotFound(new { Message = "Booking not found" });
 
-        return Ok(new { Message = "Booking cancelled successfully" });
+            return Ok(new { Message = "Booking cancelled successfully" });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 }
