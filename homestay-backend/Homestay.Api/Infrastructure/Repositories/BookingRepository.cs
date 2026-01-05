@@ -76,7 +76,7 @@ public class BookingRepository
 
     public async Task<bool> CancelAsync(Guid id, Guid userId)
     {
-        var now = DateTime.Now;
+        var now = DateTime.UtcNow;
         return await _context.Bookings
             .Where(b => b.Id == id)
             .ExecuteUpdateAsync(setters => setters
@@ -87,7 +87,7 @@ public class BookingRepository
 
     public async Task<IEnumerable<Booking>> GetExpiredPendingPaymentBookingsAsync()
     {
-        var expiryThreshold = DateTime.Now.AddMinutes(-15);
+        var expiryThreshold = DateTime.UtcNow.AddMinutes(-15);
         
         return await _context.Bookings
             .Include(b => b.Room)

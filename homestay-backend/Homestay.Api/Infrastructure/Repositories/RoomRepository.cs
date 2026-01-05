@@ -24,6 +24,8 @@ public class RoomRepository
     public async Task<Room?> GetByIdAsync(Guid id)
     {
         return await _context.Rooms
+            .Include(r => r.Homestay)
+            .Include(r => r.Amenities)
             .AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == id);
     }
@@ -31,9 +33,12 @@ public class RoomRepository
     public async Task<IEnumerable<Room>> GetByHomestayIdAsync(Guid homestayId)
     {
         return await _context.Rooms
+            .Include(r => r.Homestay)
+            .Include(r => r.Amenities)
             .AsNoTracking()
             .Where(r => r.HomestayId == homestayId)
             .OrderBy(r => r.RoomName)
+            
             .ToListAsync();
     }
 
@@ -78,6 +83,67 @@ public class RoomRepository
         return await _context.Rooms
             .AsNoTracking()
             .Include(r => r.Homestay)
+            .Include(r => r.Amenities)
             .FirstOrDefaultAsync(r => r.Id == roomId);
+    }
+
+    public async Task<Room?> GetRoomForUpdateAsync(Guid roomId)
+    {
+        return await _context.Rooms
+            .FirstOrDefaultAsync(r => r.Id == roomId);
+    }
+
+    public async Task<bool> UpdateRoomAmenitiesAsync(Guid roomId, List<int> amenityIds)
+    {
+        var room = await _context.Rooms
+            .Include(r => r.Amenities)
+            .FirstOrDefaultAsync(r => r.Id == roomId);
+
+        if (room == null) return false;
+
+        // Clear existing amenities
+        room.Amenities.Clear();
+
+        // Add new amenities
+        if (amenityIds != null && amenityIds.Any())
+        {
+            var amenities = await _context.Amenities
+                .Where(a => amenityIds.Contains(a.Id) && a.IsActive == true)
+                .ToListAsync();
+
+            // Check if all requested amenities exist
+            var invalidIds = amenityIds.Except(amenities.Select(a => a.Id)).ToList();
+            if (invalidIds.Any())
+            {
+                throw new ArgumentException($"Invalid or inactive amenity IDs: {string.Join(", ", invalidIds)}");
+            }
+
+            foreach (var amenity in amenities)
+            {
+                room.Amenities.Add(amenity);
+            }
+        }
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> ValidateAmenityIdsAsync(List<int> amenityIds)
+    {
+        if (amenityIds == null || !amenityIds.Any()) return true;
+
+        var validCount = await _context.Amenities
+            .Where(a => amenityIds.Contains(a.Id) && a.IsActive == true)
+            .CountAsync();
+
+        return validCount == amenityIds.Count;
+    }
+
+    public async Task<List<Amenity>> GetAllActiveAmenitiesAsync()
+    {
+        return await _context.Amenities
+            .Where(a => a.IsActive == true)
+            .OrderBy(a => a.Name)
+            .ToListAsync();
     }
 }

@@ -63,7 +63,7 @@ public class HomestayRepository
         if (homestay == null || homestay.DeletedAt != null)
             return false;
 
-        homestay.DeletedAt = DateTime.Now;
+        homestay.DeletedAt = DateTime.UtcNow;
         homestay.DeletedBy = deletedBy;
 
         await _context.SaveChangesAsync();

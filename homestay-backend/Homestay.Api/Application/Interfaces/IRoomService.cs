@@ -9,4 +9,5 @@ public interface IRoomService
     Task<IEnumerable<RoomResponse>> GetRoomsByHomestayIdAsync(Guid homestayId);
     Task<bool> UpdateRoomAsync(Guid roomId, Guid hostId, UpdateRoomRequest request);
     Task<bool> DeleteRoomAsync(Guid roomId, Guid hostId);
+    Task<IEnumerable<AmenityDto>> GetAllAmenitiesAsync();
 }

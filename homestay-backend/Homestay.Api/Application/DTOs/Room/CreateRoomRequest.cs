@@ -22,4 +22,6 @@ public class CreateRoomRequest
     [Required(ErrorMessage = "Status is required")]
     [RegularExpression("(ACTIVE|INACTIVE|MAINTENANCE)", ErrorMessage = "Status must be: ACTIVE, INACTIVE, or MAINTENANCE")]
     public string Status { get; set; } = "ACTIVE";
+
+    public List<int>? AmenityIds { get; set; }
 }

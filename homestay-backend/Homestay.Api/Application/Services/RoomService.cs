@@ -27,6 +27,13 @@ public class RoomService : IRoomService
         if (homestayHostId != hostId)
             throw new UnauthorizedAccessException("You can only create rooms for your own homestay");
 
+        if (request.AmenityIds != null && request.AmenityIds.Any())
+        {
+            var isValid = await _roomRepository.ValidateAmenityIdsAsync(request.AmenityIds);
+            if (!isValid)
+                throw new ArgumentException("One or more amenity IDs are invalid or inactive");
+        }
+
         var room = new Room
         {
             HomestayId = request.HomestayId,
@@ -38,21 +45,17 @@ public class RoomService : IRoomService
 
         var createdRoom = await _roomRepository.CreateAsync(room);
         
+        // Add amenities if provided
+        if (request.AmenityIds != null && request.AmenityIds.Any())
+        {
+            await _roomRepository.UpdateRoomAmenitiesAsync(createdRoom.Id, request.AmenityIds);
+        }
+        
         var roomWithHomestay = await _roomRepository.GetByIdAsync(createdRoom.Id);
         if (roomWithHomestay == null)
             throw new InvalidOperationException("Failed to retrieve created room");
 
-        return new RoomResponse
-        {
-            Id = roomWithHomestay.Id,
-            HomestayId = roomWithHomestay.HomestayId,
-            HomestayName = roomWithHomestay.Homestay.Name,
-            RoomName = roomWithHomestay.RoomName,
-            BasePrice = roomWithHomestay.BasePrice,
-            Capacity = roomWithHomestay.Capacity,
-            Status = roomWithHomestay.Status,
-            CreatedAt = roomWithHomestay.CreatedAt ?? DateTime.Now
-        };
+        return MapToResponse(roomWithHomestay);
     }
 
     public async Task<RoomResponse?> GetRoomByIdAsync(Guid roomId)
@@ -76,12 +79,29 @@ public class RoomService : IRoomService
         if (homestayHostId != hostId)
             throw new UnauthorizedAccessException("You can only update rooms for your own homestay");
 
-        if (request.RoomName != null) room.RoomName = request.RoomName;
-        if (request.BasePrice.HasValue) room.BasePrice = request.BasePrice.Value;
-        if (request.Capacity.HasValue) room.Capacity = request.Capacity.Value;
-        if (request.Status != null) room.Status = request.Status;
+        if (request.AmenityIds != null && request.AmenityIds.Any())
+        {
+            var isValid = await _roomRepository.ValidateAmenityIdsAsync(request.AmenityIds);
+            if (!isValid)
+                throw new ArgumentException("One or more amenity IDs are invalid or inactive");
+        }
 
-        return await _roomRepository.UpdateAsync(room);
+        var roomToUpdate = await _roomRepository.GetRoomForUpdateAsync(roomId);
+        if (roomToUpdate == null) return false;
+
+        if (request.RoomName != null) roomToUpdate.RoomName = request.RoomName;
+        if (request.BasePrice.HasValue) roomToUpdate.BasePrice = request.BasePrice.Value;
+        if (request.Capacity.HasValue) roomToUpdate.Capacity = request.Capacity.Value;
+        if (request.Status != null) roomToUpdate.Status = request.Status;
+
+        var updated = await _roomRepository.UpdateAsync(roomToUpdate);
+        
+        if (request.AmenityIds != null)
+        {
+            await _roomRepository.UpdateRoomAmenitiesAsync(roomId, request.AmenityIds);
+        }
+
+        return updated;
     }
 
     public async Task<bool> DeleteRoomAsync(Guid roomId, Guid hostId)
@@ -111,7 +131,26 @@ public class RoomService : IRoomService
             BasePrice = room.BasePrice,
             Capacity = room.Capacity,
             Status = room.Status,
-            CreatedAt = room.CreatedAt ?? DateTime.Now
+            CreatedAt = room.CreatedAt ?? DateTime.UtcNow,
+            Amenities = [.. room.Amenities.Select(a => new AmenityDto
+            {
+                Id = a.Id,
+                Code = a.Code,
+                Name = a.Name,
+                Icon = a.Icon
+            })]
         };
+    }
+
+    public async Task<IEnumerable<AmenityDto>> GetAllAmenitiesAsync()
+    {
+        var amenities = await _roomRepository.GetAllActiveAmenitiesAsync();
+        return amenities.Select(a => new AmenityDto
+        {
+            Id = a.Id,
+            Code = a.Code,
+            Name = a.Name,
+            Icon = a.Icon
+        });
     }
 }
