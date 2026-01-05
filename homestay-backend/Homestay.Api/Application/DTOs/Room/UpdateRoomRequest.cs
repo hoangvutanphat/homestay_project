@@ -15,4 +15,6 @@ public class UpdateRoomRequest
 
     [RegularExpression("(ACTIVE|INACTIVE|MAINTENANCE)", ErrorMessage = "Status must be: ACTIVE, INACTIVE, or MAINTENANCE")]
     public string? Status { get; set; }
+
+    public List<int>? AmenityIds { get; set; }
 }

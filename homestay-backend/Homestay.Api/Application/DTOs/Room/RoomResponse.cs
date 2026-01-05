@@ -10,4 +10,13 @@ public class RoomResponse
     public int Capacity { get; set; }
     public string Status { get; set; } = null!;
     public DateTime CreatedAt { get; set; }
+    public List<AmenityDto> Amenities { get; set; } = new();
+}
+
+public class AmenityDto
+{
+    public int Id { get; set; }
+    public string Code { get; set; } = null!;
+    public string Name { get; set; } = null!;
+    public string? Icon { get; set; }
 }

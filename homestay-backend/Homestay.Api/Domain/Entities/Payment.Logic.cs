@@ -7,13 +7,13 @@ public partial class Payment
         Id = Guid.NewGuid();
         Currency = "VND";
         Status = "PENDING";
-        CreatedAt = DateTime.Now;
+        CreatedAt = DateTime.UtcNow;
     }
 
     public void MarkAsSuccess(string? transactionId = null)
     {
         Status = "SUCCESS";
-        PaidAt = DateTime.Now;
+        PaidAt = DateTime.UtcNow;
     }
 
     public void MarkAsFailed()

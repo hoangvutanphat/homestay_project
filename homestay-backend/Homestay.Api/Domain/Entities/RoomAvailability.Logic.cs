@@ -5,7 +5,7 @@ public partial class RoomAvailability
     public void Reserve(Guid bookingId, int expiryMinutes = 15)
     {
         IsAvailable = false;
-        var expiryTime = DateTime.Now.AddMinutes(expiryMinutes);
+        var expiryTime = DateTime.UtcNow.AddMinutes(expiryMinutes);
         Reason = $"RESERVED|{bookingId}|{expiryTime:O}";
     }
 
@@ -35,7 +35,7 @@ public partial class RoomAvailability
         if (parts.Length < 3) return false;
         if (DateTime.TryParse(parts[2], out var expiryTime))
         {
-            return DateTime.Now > expiryTime;
+            return DateTime.UtcNow > expiryTime;
         }
         return false;
     }

@@ -22,9 +22,24 @@ public class RoomController : ControllerBase
     [Authorize(Policy = AuthorizationPolicies.HostOrAdmin)]
     public async Task<IActionResult> CreateRoom([FromBody] CreateRoomRequest request)
     {
-        var hostId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var room = await _roomService.CreateRoomAsync(hostId, request);
-        return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, room);
+        try
+        {
+            var hostId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var room = await _roomService.CreateRoomAsync(hostId, request);
+            return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, room);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException )
+        {
+            return Forbid();
+        }
     }
 
     [HttpGet("{id}")]
@@ -41,25 +56,54 @@ public class RoomController : ControllerBase
     [Authorize(Policy = AuthorizationPolicies.HostOrAdmin)]
     public async Task<IActionResult> UpdateRoom(Guid id, [FromBody] UpdateRoomRequest request)
     {
-        var hostId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var success = await _roomService.UpdateRoomAsync(id, hostId, request);
-        
-        if (!success)
-            return NotFound(new { Message = "Room not found" });
+        try
+        {
+            var hostId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var success = await _roomService.UpdateRoomAsync(id, hostId, request);
+            
+            if (!success)
+                return NotFound(new { Message = "Room not found" });
 
-        return NoContent();
+            return NoContent();
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException )
+        {
+            return Forbid();
+        }
     }
 
     [HttpDelete("{id}")]
     [Authorize(Policy = AuthorizationPolicies.HostOrAdmin)]
     public async Task<IActionResult> DeleteRoom(Guid id)
     {
-        var hostId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var success = await _roomService.DeleteRoomAsync(id, hostId);
-        
-        if (!success)
-            return NotFound(new { Message = "Room not found" });
+        try
+        {
+            var hostId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var success = await _roomService.DeleteRoomAsync(id, hostId);
+            
+            if (!success)
+                return NotFound(new { Message = "Room not found" });
 
-        return Ok(new { Message = "Room deleted successfully" });
+            return Ok(new { Message = "Room deleted successfully" });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException )
+        {
+            return Forbid();
+        }
+    }
+
+    [HttpGet("amenities")]
+    public async Task<IActionResult> GetAllAmenities()
+    {
+        var amenities = await _roomService.GetAllAmenitiesAsync();
+        return Ok(amenities);
     }
 }
