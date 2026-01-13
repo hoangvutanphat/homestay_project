@@ -68,36 +68,22 @@ const Navbar = () => {
                 <DropdownMenuLabel>Tài khoản</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/profile">Hồ sơ cá nhân</Link>
+                  <Link href="/profile" className="cursor-pointer">
+                    <User size={16} className="mr-2" />
+                    Hồ sơ cá nhân
+                  </Link>
                 </DropdownMenuItem>
 
-                {/* {user?.role === 'user' && (
-                  <DropdownMenuItem asChild>
-                    <Link to='/booking-history'>Lịch sử đặt phòng</Link>
+                {user?.role === "guest" && (
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link href="/bookings">
+                      <Calendar size={16} className="mr-2" />
+                      Đặt phòng của tôi
+                    </Link>
                   </DropdownMenuItem>
                 )}
-                {user?.role === 'admin' && (
-                  <DropdownMenuItem asChild>
-                    <Link to='/admin'>Quản trị viên</Link>
-                  </DropdownMenuItem>
-                )}
-                {user?.role === 'host' && (
-                  <DropdownMenuItem asChild>
-                    <Link to='/host'>Quản lý chỗ nghỉ</Link>
-                  </DropdownMenuItem>
-                )}
-                {user?.role === 'user' && (
-                  <DropdownMenuItem asChild>
-                    <Link to='/favorites'>Homestay yêu thích</Link>
-                  </DropdownMenuItem>
-                <DropdownMenuLabel>Tài khoản</DropdownMenuLabel>
-                <DropdownMenuItem asChild className='cursor-pointer'>
-                  <Link href='/bookings'>
-                    <Calendar size={16} className='mr-2' />
-                    Đặt phòng của tôi
-                  </Link>
-                </DropdownMenuItem> */}
-                {user?.role === "HOST" && (
+
+                {user?.role === "host" && (
                   <DropdownMenuItem asChild className="cursor-pointer">
                     <Link href="/dashboard">
                       <LayoutDashboard size={16} className="mr-2" />
@@ -135,7 +121,7 @@ const Navbar = () => {
 
         {isMenuOpen && (
           <div className="fixed inset-0 top-16 bg-white z-50 flex flex-col md:hidden">
-            <nav className="flex flex-col gap-4 p-6">
+            <nav className="flex flex-col gap-4 p-6 bg-white ">
               <Link
                 href="/"
                 className="text-lg font-medium py-2 hover:text-blue-600"
@@ -170,7 +156,7 @@ const Navbar = () => {
                       Đặt phòng của tôi
                     </Link>
 
-                    {user?.role === "HOST" && (
+                    {user?.role === "host" && (
                       <Link
                         href="/dashboard"
                         className="py-2 hover:text-blue-600"

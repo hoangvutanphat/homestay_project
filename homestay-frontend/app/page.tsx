@@ -1,22 +1,16 @@
 import HeroBanner from "@/components/HeroBanner";
-// import FeaturedProperties from "@/components/FeaturedProperties";
-import Footer from "@/components/Footer";
 import NewsletterSection from "@/components/NewsletterSection";
+import PopularDestinations from "@/components/PopularDestinations";
 import SpecialOffers from "@/components/SpecialOffers";
 import Testimonials from "@/components/Testimonials";
 import WhyChooseUs from "@/components/WhyChooseUs";
-import PopularDestinations from "@/components/PopularDestinations";
 
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-50 to-white">
       <main className="flex-1 flex flex-col items-center">
         <HeroBanner />
-
         <div className="container px-4 relative">{/* <SearchBox /> */}</div>
-        {/* <div className="bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-          <FeaturedProperties />
-        </div> */}
         <div className="bg-gradient-to-r from-white to-blue-50">
           <SpecialOffers />
         </div>
@@ -33,7 +27,6 @@ const Index = () => {
           <NewsletterSection />
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

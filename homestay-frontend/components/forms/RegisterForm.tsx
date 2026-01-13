@@ -37,7 +37,7 @@ export default function RegisterForm() {
     password: "",
     confirmPassword: "",
     phoneNumber: "",
-    role: "GUEST" as "GUEST" | "HOST",
+    role: "guest" as "guest" | "host",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,7 +80,7 @@ export default function RegisterForm() {
   const handleRoleChange = (value: string) => {
     setFormData((prev) => ({
       ...prev,
-      role: value as "GUEST" | "HOST",
+      role: value as "guest" | "host",
     }));
   };
 

@@ -26,6 +26,20 @@ public static class AuthenticationExtensions
                         Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]!)),
                     RoleClaimType = ClaimTypes.Role
                 };
+
+                // Read JWT token from cookie instead of Authorization header
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        // Check if token exists in cookie
+                        if (context.Request.Cookies.ContainsKey("jwt_token"))
+                        {
+                            context.Token = context.Request.Cookies["jwt_token"];
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
         return services;

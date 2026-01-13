@@ -20,7 +20,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginForm() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, user, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -35,8 +35,6 @@ export default function LoginForm() {
     try {
       await login(formData);
       toast.success("Đăng nhập thành công!");
-
-      // Redirect based on returnUrl or default to home
       const searchParams = new URLSearchParams(window.location.search);
       const from = searchParams.get("from") || "/";
       router.push(from);

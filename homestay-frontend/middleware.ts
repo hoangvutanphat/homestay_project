@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get("token")?.value;
+  const token = request.cookies.get("jwt_token")?.value;
   const { pathname } = request.nextUrl;
 
   // Public routes that don't need authentication
@@ -10,13 +10,6 @@ export function middleware(request: NextRequest) {
   const isPublicRoute = publicRoutes.some(
     (route) => pathname === route || pathname.startsWith("/homestays/")
   );
-
-  // Auth pages - redirect to home if already authenticated
-  const isAuthPage =
-    pathname.startsWith("/login") || pathname.startsWith("/register");
-  if (isAuthPage && token) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
 
   // Protected routes - redirect to login if not authenticated
   const protectedPrefixes = ["/dashboard", "/bookings", "/admin", "/profile"];

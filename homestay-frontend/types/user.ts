@@ -1,10 +1,10 @@
-export type UserRole = "GUEST" | "HOST" | "ADMIN";
+export type UserRole = "guest" | "host" | "admin";
 
 export interface User {
   id: string;
   email: string;
   fullName: string;
-  phoneNumber?: string;
+  phone?: string;
   role: UserRole;
   createdAt: string;
 }
@@ -18,7 +18,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   fullName: string;
-  phoneNumber?: string;
+  phone?: string;
   role?: UserRole;
 }
 

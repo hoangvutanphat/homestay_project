@@ -69,7 +69,7 @@ public class BookingService : IBookingService
             NumberOfNights = numberOfNights,
             TotalPrice = totalPrice,
             Status = createdBooking.Status,
-            CreatedAt = createdBooking.CreatedAt ?? DateTime.Now
+            CreatedAt = createdBooking.CreatedAt ?? DateTime.UtcNow
         };
     }
 
@@ -170,7 +170,7 @@ public class BookingService : IBookingService
             NumberOfNights = numberOfNights,
             TotalPrice = totalPrice,
             Status = booking.Status,
-            CreatedAt = booking.CreatedAt ?? DateTime.Now
+            CreatedAt = booking.CreatedAt ?? DateTime.UtcNow
         };
     }
 
