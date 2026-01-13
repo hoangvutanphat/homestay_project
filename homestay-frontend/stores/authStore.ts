@@ -5,7 +5,6 @@ import * as authApi from "@/lib/api/auth";
 
 interface AuthStore {
   user: User | null;
-
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -14,7 +13,8 @@ interface AuthStore {
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => void;
   clearError: () => void;
-  setUser: (user: User) => void;
+  setUser: (user: User | null) => void;
+  setIsLoading: (isLoading: boolean) => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -28,10 +28,13 @@ export const useAuthStore = create<AuthStore>()(
       login: async (credentials) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await authApi.login(credentials);
+          await authApi.login(credentials);
+
+          // Gọi API để lấy thông tin user đầy đủ sau khi login thành công
+          const userData = await authApi.getCurrentUser();
 
           set({
-            user: response.user,
+            user: userData,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -47,10 +50,13 @@ export const useAuthStore = create<AuthStore>()(
       register: async (data) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await authApi.register(data);
+          await authApi.register(data);
+
+          // Gọi API để lấy thông tin user đầy đủ sau khi register thành công
+          const userData = await authApi.getCurrentUser();
 
           set({
-            user: response.user,
+            user: userData,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -75,7 +81,9 @@ export const useAuthStore = create<AuthStore>()(
 
       clearError: () => set({ error: null }),
 
-      setUser: (user) => set({ user }),
+      setUser: (user: User | null) => set({ user, isAuthenticated: !!user }),
+
+      setIsLoading: (isLoading) => set({ isLoading }),
     }),
     {
       name: "auth-storage",

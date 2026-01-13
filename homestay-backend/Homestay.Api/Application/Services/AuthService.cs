@@ -49,6 +49,7 @@ public class AuthService : IAuthService
                 Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                FullName = $"{user.FirstName} {user.LastName}",
                 Email = user.Email,
                 Role = user.Role
             }
@@ -75,14 +76,19 @@ public class AuthService : IAuthService
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
+        // Generate JWT token for auto-login after registration
+        var token = GenerateJwtToken(user);
+
         return new RegisterResponse
         {
+            Token = token,
             Message = "Registration successful. Please login to continue.",
             User = new UserInfo
             {
                 Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                FullName = $"{user.FirstName} {user.LastName}",
                 Email = user.Email,
                 Role = user.Role
             }
@@ -92,6 +98,44 @@ public class AuthService : IAuthService
     public async Task<bool> UserExistsAsync(string email)
     {
         return await _context.Users.AnyAsync(u => u.Email == email);
+    }
+
+    public async Task<UserInfo?> GetUserByIdAsync(Guid userId)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        
+        if (user == null)
+            return null;
+
+        return new UserInfo
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            FullName = $"{user.FirstName} {user.LastName}",
+            Email = user.Email,
+            Role = user.Role,
+            Phone = user.Phone
+        };
+    }
+
+    public async Task<bool> ChangePasswordAsync(Guid userId, string currentPassword, string newPassword)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        
+        if (user == null)
+            return false;
+
+        // Verify current password
+        if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.PasswordHash))
+            return false;
+
+        // Hash new password
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+      
+
+        await _context.SaveChangesAsync();
+        return true;
     }
 
     private string GenerateJwtToken(User user)

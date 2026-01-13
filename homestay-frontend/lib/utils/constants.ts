@@ -4,9 +4,9 @@ export const API_URL =
 
 // User Roles
 export const UserRole = {
-  GUEST: "GUEST",
-  HOST: "HOST",
-  ADMIN: "ADMIN",
+  GUEST: "guest",
+  HOST: "host",
+  ADMIN: "admin",
 } as const;
 
 // Booking Status

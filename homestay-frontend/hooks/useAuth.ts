@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { useAuthStore } from "@/stores";
 import { UserRole } from "@/types";
 
@@ -14,12 +15,16 @@ export function useAuth() {
     logout,
     clearError,
     setUser,
+    setIsLoading,
   } = useAuthStore();
 
-  const checkRole = (allowedRoles: UserRole[]): boolean => {
-    if (!user) return false;
-    return allowedRoles.includes(user.role);
-  };
+  const checkRole = useCallback(
+    (allowedRoles: UserRole[]): boolean => {
+      if (!user) return false;
+      return allowedRoles.includes(user.role);
+    },
+    [user]
+  );
 
   return {
     user,
@@ -31,6 +36,7 @@ export function useAuth() {
     logout,
     clearError,
     setUser,
+    setIsLoading,
     checkRole,
   };
 }

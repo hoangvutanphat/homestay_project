@@ -72,25 +72,23 @@ const WhyChooseUs = () => {
         {features.map((feature, index) => (
           <Card
             key={index}
-            className="group border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden"
+            className="group border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden relative"
           >
-            <CardContent className="p-8 h-full text-center relative">
+            <div
+              className={`absolute inset-0 bg-gradient-to-br ${feature.bgColor} opacity-50 group-hover:opacity-70 transition-opacity duration-300`}
+            ></div>
+            <CardContent className="p-8 h-full text-center relative z-10">
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${feature.bgColor} opacity-50 group-hover:opacity-70 transition-opacity duration-300`}
-              ></div>
-              <div className="relative z-10">
-                <div
-                  className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.color} text-white mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
-                >
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-4 text-gray-800">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {feature.description}
-                </p>
+                className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.color} text-white mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
+              >
+                {feature.icon}
               </div>
+              <h3 className="text-xl font-bold mb-4 text-gray-800">
+                {feature.title}
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                {feature.description}
+              </p>
             </CardContent>
           </Card>
         ))}

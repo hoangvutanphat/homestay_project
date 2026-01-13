@@ -35,29 +35,35 @@ apiClient.interceptors.response.use(
     if (error.response) {
       // Server responded with error status
       const { status, data } = error.response;
+      const errorMessage = data?.message || "An error occurred";
 
       switch (status) {
         case 401:
-          // Unauthorized - Redirect to login (cookie đã hết hạn hoặc invalid)
-          window.location.href = "/login";
+          // Unauthorized - Only redirect if NOT on login page and NOT calling /auth/me
+          const isLoginPage = window.location.pathname === "/login";
+          const isAuthMeCall = error.config?.url?.includes("/auth/me");
+
+          if (!isLoginPage && !isAuthMeCall) {
+            window.location.href = "/login";
+          }
           break;
         case 403:
           // Forbidden
-          console.error("Access denied:", data.message);
+          console.error("Access denied:", errorMessage);
           break;
         case 404:
           // Not found
-          console.error("Resource not found:", data.message);
+          console.log("Resource not found:", errorMessage);
           break;
         case 500:
           // Server error
-          console.error("Server error:", data.message);
+          console.error("Server error:", errorMessage);
           break;
         default:
-          console.error("API Error:", data.message);
+          console.log("API Error:", errorMessage);
       }
 
-      return Promise.reject(data);
+      return Promise.reject(data || { message: errorMessage });
     } else if (error.request) {
       // Request was made but no response received
       console.error("Network Error: No response from server");

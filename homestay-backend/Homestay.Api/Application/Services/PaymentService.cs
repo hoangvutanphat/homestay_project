@@ -98,7 +98,7 @@ public class PaymentService : IPaymentService
             PaymentMethod = payment.PaymentMethod,
             Status = payment.Status,
             PaidAt = payment.PaidAt,
-            CreatedAt = payment.CreatedAt ?? DateTime.Now
+            CreatedAt = payment.CreatedAt ?? DateTime.UtcNow
         };
     }
 }
